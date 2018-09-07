@@ -1,7 +1,8 @@
-require_relative "test_helper"
-require "./code/lexer"
+require 'test_helper'
+require 'lexer/lexer'
 
-class LexerTest < Test::Unit::TestCase
+class TestLexer < Test::Unit::TestCase
+
   def test_number
     assert_equal [[:NUMBER, 1]], Lexer.new.tokenize("1")
   end
@@ -23,7 +24,7 @@ class LexerTest < Test::Unit::TestCase
     assert_equal [["||", "||"]], Lexer.new.tokenize('||')
   end
 
-  def test_indent
+  def test_lexer_produces_right_tokens
     code = <<-CODE
 if 1:
   if 2:
@@ -35,57 +36,48 @@ if 1:
 
 print "The End"
 CODE
+
     tokens = [
-      [:IF, "if"], [:NUMBER, 1],                            # if 1:
+      [:IF, 'if'], [:NUMBER, 1],
         [:INDENT, 2],
-          [:IF, "if"], [:NUMBER, 2],                        #   if 2:
-          [:INDENT, 4],
-            [:IDENTIFIER, "print"], ["(", "("],             #     print("...")
-                                      [:STRING, "..."],
-                                    [")", ")"],
-                                    [:NEWLINE, "\n"],
-            [:IF, "if"], [:FALSE, "false"],                 #     if false:
-            [:INDENT, 6],
-              [:IDENTIFIER, "pass"],                        #       pass
-            [:DEDENT, 4], [:NEWLINE, "\n"],
-            [:IDENTIFIER, "print"], ["(", "("],             #     print("done!")
-                                      [:STRING, "done!"],
-                                    [")", ")"],
-        [:DEDENT, 2], [:NEWLINE, "\n"],
-        [:NUMBER, 2],                                       #   2
+          [:IF, 'if'], [:NUMBER, 2],
+            [:INDENT, 4],
+              [:IDENTIFIER, 'print'], ['(', '('],
+                                        [:STRING, '...'],
+                                      [')', ')'],
+                                      [:NEWLINE, "\n"],
+              [:IF, 'if'], [:FALSE, 'false'],
+                [:INDENT, 6],
+                  [:IDENTIFIER, 'pass'],
+
+              [:DEDENT, 4], [:NEWLINE, "\n"],
+              [:IDENTIFIER, 'print'], ['(', '('],
+                                        [:STRING, 'done!'],
+                                      [')', ')'],
+          [:DEDENT, 2], [:NEWLINE, "\n"],
+          [:NUMBER, 2],
       [:DEDENT, 0], [:NEWLINE, "\n"],
-      [:NEWLINE, "\n"],                                     #
-      [:IDENTIFIER, "print"], [:STRING, "The End"]          # print "The End"
+      [:NEWLINE, "\n"],
+      [:IDENTIFIER, 'print'], [:STRING, 'The End']
+    ]
+
+    assert_equal tokens, Lexer.new.tokenize(code)
+  end
+
+  def test_while
+    code = <<-CODE
+while true:
+  print("...")
+CODE
+    tokens = [
+      [:WHILE, 'while'], [:TRUE, 'true'],
+        [:INDENT, 2],
+          [:IDENTIFIER, 'print'], ['(', '('],
+                                    [:STRING, '...'],
+                                  [')', ')'],
+        [:DEDENT, 0],
     ]
     assert_equal tokens, Lexer.new.tokenize(code)
   end
 
-  ## Exercise: Modify the lexer to delimit blocks with <code>{ ... }</code> instead of indentation.
-  # def test_braket_lexer
-  #   require "bracket_lexer"
-
-  #   code = <<-CODE
-# if 1 {
-  # print "..."
-  # if false {
-  #   pass
-  # }
-  # print "done!"
-# }
-# print "The End"
-# CODE
-
-  #   tokens = [
-  #     [:IF, "if"], [:NUMBER, 1],
-  #     ["{", "{"], [:NEWLINE, "\n"],
-  #       [:IDENTIFIER, "print"], [:STRING, "..."], [:NEWLINE, "\n"],
-  #       [:IF, "if"], [:FALSE, "false"], ["{", "{"], [:NEWLINE, "\n"],
-  #         [:IDENTIFIER, "pass"], [:NEWLINE, "\n"],
-  #       ["}", "}"], [:NEWLINE, "\n"],
-  #       [:IDENTIFIER, "print"], [:STRING, "done!"], [:NEWLINE, "\n"],
-  #     ["}", "}"], [:NEWLINE, "\n"],
-  #     [:IDENTIFIER, "print"], [:STRING, "The End"]
-  #   ]
-  #   assert_equal tokens, BracketLexer.new.tokenize(code)
-  # end
 end
