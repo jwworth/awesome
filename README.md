@@ -8,8 +8,6 @@ Marc-André Cournoyer.
 
 Here are the language guidelines, taken directly from the book.
 
-A couple of rules for our language:
-
 - As in Python, blocks of code are delimited by their indentation.
 - Classes are declared with the class keyword.
 - Methods can be defined anywhere using the def keyword.
