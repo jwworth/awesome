@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Lexer
   KEYWORDS = %w[def class if true false nil while].freeze
 
@@ -53,7 +55,7 @@ class Lexer
       elsif operator = chunk[/\A(\|\||&&|==|!=|<=|>=)/, 1]
         tokens << [operator, operator]
         i += operator.size
-      elsif chunk =~ /\A /
+      elsif /\A /.match?(chunk)
         i += 1
       else
         value = chunk[0, 1]
