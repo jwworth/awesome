@@ -29,8 +29,8 @@ $ rvm install ruby-2.5.1
 
 ### Testing
 
-Run the tests with:
+Run a test with:
 
 ```
-$ ruby test/*
+$ ruby -Itest test/lexer_test.rb
 ```
